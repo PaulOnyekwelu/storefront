@@ -35,6 +35,17 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    # def to_json(self):
+    #     return {
+    #         "title": self.title,
+    #         "slug": self.slug,
+    #         "description": self.description,
+    #         "unit_price": self.unit_price,
+    #         "inventory": self.inventory,
+    #         # "collection": self.collection,
+    #         # "promotions": self.promotions,
+    #         "last_update": self.last_update
+    #     }
     class Meta:
         ordering = ['title']
 
