@@ -1,24 +1,26 @@
+from decimal import Decimal
+import math
 from rest_framework import serializers
-from store.models import Product
+from store.models import Product, Collection
 
 
-class CollectionSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    title = serializers.CharField(max_length=255)
+class CollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collection
+        fields = ['id', 'title', 'products_count', 'featured_product']
+
+    products_count = serializers.IntegerField(read_only=True)
 
 
-class ProductSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    slug = serializers.SlugField()
-    title = serializers.CharField(max_length=255)
-    slug_custom = serializers.SerializerMethodField(
-        method_name='get_slug_custom')
-    description = serializers.CharField(max_length=2000)
-    price = serializers.DecimalField(
-        max_digits=6, decimal_places=2, source="unit_price")
-    inventory = serializers.IntegerField()
-    last_update = serializers.DateTimeField()
-    collection = CollectionSerializer()
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", 'title', 'slug',  'description', 'unit_price',
+                  'inventory', 'collection', 'last_update']
 
-    def get_slug_custom(self, product: Product):
-        return product.title.replace(" ", "_").lower()
+    # collection = CollectionSerializer()
+    # price_with_tax = serializers.SerializerMethodField(
+    #     method_name="calc_tax_price")
+
+    # def calc_tax_price(self, product):
+    #     return product.unit_price * Decimal(1.1)

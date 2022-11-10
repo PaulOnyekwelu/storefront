@@ -1,7 +1,12 @@
 from django.urls import path
-from store.views import product_list, product_detail
+from rest_framework.routers import DefaultRouter
+from store import views
+from pprint import pprint
 
-urlpatterns = [
-    path('products/', product_list),
-    path('products/<int:id>/', product_detail)
-]
+router = DefaultRouter()
+router.register("products", views.ProductViewSet)
+router.register("collections", views.CollectionViewSet)
+
+pprint(router.urls)
+
+urlpatterns = router.urls
