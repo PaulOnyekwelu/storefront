@@ -38,17 +38,6 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    # def to_json(self):
-    #     return {
-    #         "title": self.title,
-    #         "slug": self.slug,
-    #         "description": self.description,
-    #         "unit_price": self.unit_price,
-    #         "inventory": self.inventory,
-    #         # "collection": self.collection,
-    #         # "promotions": self.promotions,
-    #         "last_update": self.last_update
-    #     }
     class Meta:
         ordering = ['title']
 
@@ -120,3 +109,12 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
+
+
+class Review(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews")
+    name = models.ForeignKey(
+        Customer, on_delete=models.CASCADE,   related_name="reviews")
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)

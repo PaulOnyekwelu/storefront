@@ -7,6 +7,4 @@ router = DefaultRouter()
 router.register("products", views.ProductViewSet)
 router.register("collections", views.CollectionViewSet)
 
-pprint(router.urls)
-
 urlpatterns = router.urls
