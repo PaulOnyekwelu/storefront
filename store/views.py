@@ -8,8 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from store.models import Product, Collection, OrderItem
-from store.serializers import ProductSerializer, CollectionSerializer
+from store.models import Product, Collection, OrderItem, Review
+from store.serializers import (
+    ProductSerializer, CollectionSerializer, ReviewSerializer)
 
 
 class ProductViewSet(ModelViewSet):
@@ -20,7 +21,7 @@ class ProductViewSet(ModelViewSet):
         return {"request": self.request}
 
     def destroy(self, request, *args, **kwargs):
-        if OrderItem.objects.filter(pk=kwargs['pk']).count() > 0:
+        if OrderItem.objects.filter(pk=kwargs['product_pk']).count() > 0:
             return Response(
                 {
                     "message": "unable to delete product"
@@ -43,6 +44,20 @@ class CollectionViewSet(ModelViewSet):
                 status=status.HTTP_405_METHOD_NOT_ALLOWED
             )
         return super().destroy(request, *args, **kwargs)
+
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.filter(
+            product_id=self.kwargs['product_pk']
+        )
+
+    def get_serializer_context(self):
+        # print(self.kwargs)
+        return {"product_id": self.kwargs['product_pk']}
 
 
 class ProductList(ListCreateAPIView):
