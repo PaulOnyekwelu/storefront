@@ -6,16 +6,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from store.filters import ProductFilter
-from store.models import Product, Collection, OrderItem, Review
+from store.models import Product, Collection, OrderItem, Review, Cart, CartItem
 from store.pagination import DefaultStorePagination
 
 from store.serializers import (
-    ProductSerializer, CollectionSerializer, ReviewSerializer)
+    ProductSerializer, CollectionSerializer,
+    ReviewSerializer, CartSerializer, CartItemSerializer)
 
 
 class ProductViewSet(ModelViewSet):
@@ -77,6 +79,12 @@ class ReviewViewSet(ModelViewSet):
         return {"product_id": self.kwargs['product_pk']}
 
 
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = CartSerializer
+    queryset = Cart.objects.prefetch_related("items__product").all()
+
+
+# below codes are obsolete
 class ProductList(ListCreateAPIView):
     """
     Endpoint: store/products
