@@ -14,8 +14,8 @@ class Collection(models.Model):
         null=True, related_name='+', blank=True
     )
 
-    # def __str__(self) -> str:
-    #     return self.title
+    def __str__(self) -> str:
+        return self.title
 
     class Meta:
         ordering = ['title']

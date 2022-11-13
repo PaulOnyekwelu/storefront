@@ -1,5 +1,7 @@
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, get_list_or_404
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import (
@@ -8,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from store.filters import ProductFilter
 from store.models import Product, Collection, OrderItem, Review
 from store.serializers import (
     ProductSerializer, CollectionSerializer, ReviewSerializer)
@@ -16,6 +19,17 @@ from store.serializers import (
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = ProductFilter
+    search_fields = ["title", "description"]
+    ordering_fields = ["unit_price", "last_update"]
+
+    # def get_queryset(self):
+    #     queryset = Product.objects.all()
+    #     collection_id = self.request.query_params.get("collection_id")
+    #     if collection_id is not None:
+    #         queryset = queryset.filter(collection_id=collection_id)
+    #     return queryset
 
     def get_serializer_context(self):
         return {"request": self.request}
