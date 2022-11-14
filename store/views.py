@@ -18,7 +18,8 @@ from store.pagination import DefaultStorePagination
 
 from store.serializers import (
     ProductSerializer, CollectionSerializer,
-    ReviewSerializer, CartSerializer, CartItemSerializer)
+    ReviewSerializer, CartSerializer,
+    CartItemSerializer, AddCartItemSerializer)
 
 
 class ProductViewSet(ModelViewSet):
@@ -76,7 +77,6 @@ class ReviewViewSet(ModelViewSet):
         )
 
     def get_serializer_context(self):
-        # print(self.kwargs)
         return {"product_id": self.kwargs['product_pk']}
 
 
@@ -88,6 +88,20 @@ class CartViewSet(
 ):
     serializer_class = CartSerializer
     queryset = Cart.objects.prefetch_related("items__product").all()
+
+
+class CartItemViewSet(ModelViewSet):
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        return CartItemSerializer
+
+    def get_queryset(self):
+        return CartItem.objects.select_related('product') \
+            .filter(cart_id=self.kwargs["cart_pk"])
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk']}
 
 
 # below codes are obsolete
