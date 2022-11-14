@@ -87,6 +87,18 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         return self.instance
 
 
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CartItem
+        fields = ['quantity']
+
+    # product = SimpleProductSerializer(read_only=True)
+    # total_price = serializers.SerializerMethodField()
+
+    # def get_total_price(self, item):
+    #     return item.quantity * item.product.unit_price
+
+
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Cart
