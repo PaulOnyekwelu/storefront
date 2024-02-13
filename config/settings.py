@@ -30,22 +30,22 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-LOCAL_APPS = [
-    "playground"
-]
+LOCAL_APPS = ["playground", "store", "tags"]
 
-THIRD_PARTY_APPS = [
-    "debug_toolbar"
-]
+THIRD_PARTY_APPS = ["debug_toolbar"]
 
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    'django.contrib.sessions',
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-] + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = (
+    [
+        "django.contrib.admin",
+        "django.contrib.sessions",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+    + THIRD_PARTY_APPS
+    + LOCAL_APPS
+)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
