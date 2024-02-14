@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-LOCAL_APPS = ["playground", "store", "tags"]
+LOCAL_APPS = ["playground", "store", "tags", "likes"]
 
 THIRD_PARTY_APPS = ["debug_toolbar"]
 
