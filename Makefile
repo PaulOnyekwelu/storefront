@@ -9,3 +9,9 @@ down:
 
 down-v:
 	docker compose -f ./local.yml down -v
+
+make-migrations:
+	python manage.py makemigrations
+
+migrate:
+	python manage.py migrate

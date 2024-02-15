@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
     env_file:
-      - ./.env/.local/.postgres
+      - ./.env/.local/.postgres/.env
     volumes:
       - local_postgres_volume:/var/lib/postgresql/data
     ports:
