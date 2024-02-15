@@ -17,8 +17,9 @@ class Collection(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField()
     decription = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(
@@ -49,7 +50,7 @@ class Address(models.Model):
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
-    post_code = models.CharField(max_length=20, null=True)
+    zip_code = models.CharField(max_length=20, null=True)
     customer = models.OneToOneField(
         Customer, on_delete=models.CASCADE, related_name="address", primary_key=True
     )
