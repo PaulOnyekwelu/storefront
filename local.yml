@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    env_file:
+      - ./.env/.local/.postgres
+    volumes:
+      - local_postgres_volume:/var/lib/postgresql/data
+    ports:
+      - 6000:5432
+
+volumes:
+  local_postgres_volume: {}
