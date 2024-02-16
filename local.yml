@@ -1,16 +1,40 @@
 version: '3.9'
 
 services:
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    env_file:
+      - ./.env/.local/.postgres
+      - ./.env/.local/.django
+    command: /start
+    depends_on:
+      - postgres
+
   postgres:
     build:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
     env_file:
-      - ./.env/.local/.postgres/.env
+      - ./.env/.local/.postgres
     volumes:
       - local_postgres_volume:/var/lib/postgresql/data
+    expose:
+      - 5432
     ports:
-      - 6000:5432
+      - 5432:5432
+
+  mock-db:
+    build:
+      context: .
+      dockerfile: ./docker/mock-db/Dockerfile
+    env_file:
+      - ./.env/.local/.postgres
+    command: /mock/mock_db
+    depends_on:
+      - api
+      - postgres
 
 volumes:
   local_postgres_volume: {}

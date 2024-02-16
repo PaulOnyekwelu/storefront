@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -22,10 +21,8 @@ class Product(models.Model):
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
-    collection = models.ForeignKey(
-        Collection, on_delete=models.PROTECT, related_name="products"
-    )
-    promotion = models.ManyToManyField(Promotion, related_name="products", blank=True)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    promotions = models.ManyToManyField(Promotion, blank=True)
 
 
 class Customer(models.Model):
@@ -34,8 +31,6 @@ class Customer(models.Model):
         SILVER = ("S", _("Silver"))
         GOLD = ("G", _("Gold"))
 
-    id = models.BigAutoField(primary_key=True, unique=True)
-    pkid = models.UUIDField(default=uuid.uuid4, unique=True, null=False)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(max_length=100, unique=True)
@@ -52,7 +47,7 @@ class Address(models.Model):
     country = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=20, null=True)
     customer = models.OneToOneField(
-        Customer, on_delete=models.CASCADE, related_name="address", primary_key=True
+        Customer, on_delete=models.CASCADE, primary_key=True
     )
 
 
@@ -66,20 +61,14 @@ class Order(models.Model):
     payment_status = models.CharField(
         max_length=1, choices=Status.choices, default=Status.PENDING
     )
-    customer = models.ForeignKey(
-        Customer, on_delete=models.PROTECT, related_name="orders"
-    )
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
 
 class OrderItem(models.Model):
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    product = models.ForeignKey(
-        Product, on_delete=models.PROTECT, related_name="order_items"
-    )
-    order = models.ForeignKey(
-        Order, on_delete=models.PROTECT, related_name="order_items"
-    )
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
 
 
 class Cart(models.Model):
@@ -87,8 +76,6 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="cart_items"
-    )
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()

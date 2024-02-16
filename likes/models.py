@@ -7,10 +7,7 @@ User = get_user_model()
 
 
 class LikedItem(models.Model):
-    RELATED_NAME = "liked_items"
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name=RELATED_NAME)
-    content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, related_name=RELATED_NAME
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()

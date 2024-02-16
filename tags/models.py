@@ -8,7 +8,7 @@ class Tag(models.Model):
 
 
 class TaggedItem(models.Model):
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="tagged_items")
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="tagged_items")
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
