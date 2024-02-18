@@ -1,10 +1,9 @@
 from django.shortcuts import render
+from store.models import Product
 
 
 def hello(request):
-    print(request)
-    x = 1
-    y = 2
-    # assert x + y == 4
+    products = Product.objects.all()
 
-    return render(request, "hello.html", {"result": x + y})
+    return render(request, "hello.html", {"result": list(products)})
+

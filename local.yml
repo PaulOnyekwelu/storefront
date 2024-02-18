@@ -8,6 +8,14 @@ services:
     env_file:
       - ./.env/.local/.postgres
       - ./.env/.local/.django
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
     command: /start
     depends_on:
       - postgres
