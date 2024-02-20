@@ -76,19 +76,19 @@ def run_sql_file(sql_file_path, table_name):
                 with conn.cursor() as cursor:
                     # Read SQL statements from file
                     with open(sql_file_path, "r") as sql_file:
-                        sql_statements = sql_file.readlines()
+                        sql_statements = sql_file.read()
 
                     if should_add_data(cursor, table_name):
+                        # # Execute each statement, handling data and errors
+                        # for statement in sql_statements:
+                        #     if statement.strip():  # Ignore empty lines
+                        #         try:
+                        #             cursor.execute(statement)
+                        #         except psycopg2.Error as e:
+                        #             # Handle potential exceptions and reporting
+                        #             print(f"Error executing statement: {e}")
 
-                        # Execute each statement, handling data and errors
-                        for statement in sql_statements:
-                            if statement.strip():  # Ignore empty lines
-                                try:
-                                    cursor.execute(statement)
-                                except psycopg2.Error as e:
-                                    # Handle potential exceptions and reporting
-                                    print(f"Error executing statement: {e}")
-
+                        cursor.execute(sql_statements)
                         # Commit changes to the database
                         conn.commit()
                         print("Data insertion completed successfully.")
@@ -102,5 +102,5 @@ def run_sql_file(sql_file_path, table_name):
 if __name__ == "__main__":
 
     # mocking the customer table
-    sql_file_path = "mock/seed.sql"
+    sql_file_path = "mock/seed_db.sql"
     run_sql_file(sql_file_path, "store_customer")
