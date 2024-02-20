@@ -56,6 +56,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display_links = ("full_name",)
     list_editable = ("membership",)
     ordering = ("first_name", "last_name")
+    list_filter = ("order",)
     list_per_page = 20
 
     def get_queryset(self, request):
@@ -80,6 +81,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ("order_id", "placed_at", "customer_name", "payment_status")
     ordering = ("customer",)
     list_filter = ("customer", "payment_status")
+    list_select_related = ("customer",)
     list_per_page = 20
 
     @admin.display(ordering="id")
@@ -89,3 +91,14 @@ class OrderAdmin(admin.ModelAdmin):
     @admin.display(ordering="customer")
     def customer_name(self, order):
         return f"{order.customer.first_name} {order.customer.last_name}"
+
+        # url = (
+        #     reverse("admin:store_customer_changelist")
+        #     + "?"
+        #     + urlencode({"order__id": order.id})
+        # )
+        # return format_html(
+        #     "<a href='{}'>{}</a>",
+        #     url,
+        #     f"{order.customer.first_name} {order.customer.last_name}",
+        # )
