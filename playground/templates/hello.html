@@ -6,6 +6,12 @@
   </head>
   <body>
     <h1>Hello, World!</h1>
-    <!-- <h2>result: {{ result }}</h2> -->
+    <div>
+      {% for product in products %}
+        <div>
+          {{ product.title }} -> {{ product.unit_price }} -> {{ product.collection.title }}
+        </div>
+      {% endfor %}
+    </div>
   </body>
 </html>

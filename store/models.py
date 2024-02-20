@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 class Promotion(models.Model):
@@ -8,10 +7,9 @@ class Promotion(models.Model):
 
 
 class Collection(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
-        "Product", on_delete=models.SET_NULL, null=True, related_name="+"
-    )
+        'Product', on_delete=models.SET_NULL, null=True, related_name='+')
 
 
 class Product(models.Model):
@@ -20,55 +18,58 @@ class Product(models.Model):
     description = models.TextField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
-    last_updated = models.DateTimeField(auto_now=True)
+    last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
-    promotions = models.ManyToManyField(Promotion, blank=True)
+    promotions = models.ManyToManyField(Promotion)
 
 
 class Customer(models.Model):
-    class Membership(models.TextChoices):
-        BRONZE = ("B", _("Bronze"))
-        SILVER = ("S", _("Silver"))
-        GOLD = ("G", _("Gold"))
+    MEMBERSHIP_BRONZE = 'B'
+    MEMBERSHIP_SILVER = 'S'
+    MEMBERSHIP_GOLD = 'G'
 
+    MEMBERSHIP_CHOICES = [
+        (MEMBERSHIP_BRONZE, 'Bronze'),
+        (MEMBERSHIP_SILVER, 'Silver'),
+        (MEMBERSHIP_GOLD, 'Gold'),
+    ]
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=100, unique=True)
-    phone = models.CharField(max_length=50, null=True)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True)
     membership = models.CharField(
-        max_length=1, choices=Membership.choices, default=Membership.BRONZE
-    )
-
-
-class Address(models.Model):
-    address = models.CharField(max_length=100)
-    city = models.CharField(max_length=50)
-    country = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=20, null=True)
-    customer = models.OneToOneField(
-        Customer, on_delete=models.CASCADE, primary_key=True
-    )
+        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
 
 
 class Order(models.Model):
-    class Status(models.TextChoices):
-        PENDING = ("P", "Pending")
-        COMPLETE = ("C", "Complete")
-        FAILED = ("F", "Failed")
+    PAYMENT_STATUS_PENDING = 'P'
+    PAYMENT_STATUS_COMPLETE = 'C'
+    PAYMENT_STATUS_FAILED = 'F'
+    PAYMENT_STATUS_CHOICES = [
+        (PAYMENT_STATUS_PENDING, 'Pending'),
+        (PAYMENT_STATUS_COMPLETE, 'Complete'),
+        (PAYMENT_STATUS_FAILED, 'Failed')
+    ]
 
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(
-        max_length=1, choices=Status.choices, default=Status.PENDING
-    )
+        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
 
 class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE)
 
 
 class Cart(models.Model):

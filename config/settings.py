@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import secrets
 import environ
+import socket
 
 
 env = environ.Env()
@@ -151,8 +152,8 @@ MEDIA_ROOT = str(BASE_DIR / "mediafiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: DEBUG,
+}

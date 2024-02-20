@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=200)
+    label = models.CharField(max_length=200)
 
 
 class TaggedItem(models.Model):

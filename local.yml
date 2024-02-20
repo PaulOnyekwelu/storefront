@@ -45,4 +45,6 @@ services:
       - postgres
 
 volumes:
+  static_volume:
+  media_volume:
   local_postgres_volume: {}
