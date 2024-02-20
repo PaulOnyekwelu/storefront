@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
-from .models import Collection, Customer, Product, Order
+from .models import Collection, Customer, Product, Order, OrderItem
 
 
 class InventoryFilter(admin.SimpleListFilter):
@@ -20,7 +20,6 @@ class InventoryFilter(admin.SimpleListFilter):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     actions = ("clear_inventory",)
-    prepopulated_fields = {"slug": ["title"]}
     autocomplete_fields = ("collection",)
     list_display = (
         "title",
@@ -35,6 +34,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ("collection",)
     list_filter = ("collection", InventoryFilter)
     list_per_page = 20
+    prepopulated_fields = {"slug": ["title"]}
+    search_fields = ("title",)
 
     @admin.display(ordering="collection")
     def collection_title(self, product):
@@ -106,30 +107,60 @@ class CustomerAdmin(admin.ModelAdmin):
         )
 
 
+class OrderItemInLine(admin.TabularInline):
+    model = OrderItem
+    autocomplete_fields = ("product",)
+    min_num = 1
+    max_num = 10
+    extra = 0
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     autocomplete_fields = ("customer",)
-    list_display = ("order_id", "placed_at", "customer_name", "payment_status")
-    ordering = ("customer",)
+    inlines = [OrderItemInLine]
+    list_display = (
+        "order_id",
+        "order_items",
+        "placed_at",
+        "customer_name",
+        "payment_status",
+    )
     list_filter = ("customer", "payment_status")
     list_select_related = ("customer",)
     list_per_page = 20
+    ordering = ("customer",)
+
+    def get_queryset(self, request):
+        return (
+            super().get_queryset(request).annotate(orderitems_count=Count("orderitem"))
+        )
 
     @admin.display(ordering="id")
     def order_id(self, order):
         return order.id
 
+    @admin.display(ordering="order_items")
+    def order_items(self, order):
+        url = (
+            reverse("admin:store_orderitem_changelist")
+            + "?"
+            + urlencode({"order__id": order.id})
+        )
+        return format_html(
+            "<a href='{}'>{}</a>", url, f"{order.orderitems_count} items"
+        )
+
     @admin.display(ordering="customer")
     def customer_name(self, order):
         return f"{order.customer.first_name} {order.customer.last_name}"
 
-        # url = (
-        #     reverse("admin:store_customer_changelist")
-        #     + "?"
-        #     + urlencode({"order__id": order.id})
-        # )
-        # return format_html(
-        #     "<a href='{}'>{}</a>",
-        #     url,
-        #     f"{order.customer.first_name} {order.customer.last_name}",
-        # )
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ("product", "quantity", "unit_price", "order_id")
+    list_filter = ("order",)
+
+    @admin.display(ordering="order_id")
+    def order_id(self, order_item):
+        return order_item.order.id
