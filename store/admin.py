@@ -20,6 +20,8 @@ class InventoryFilter(admin.SimpleListFilter):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     actions = ("clear_inventory",)
+    prepopulated_fields = {"slug": ["title"]}
+    autocomplete_fields = ("collection",)
     list_display = (
         "title",
         "description",
@@ -55,6 +57,7 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ("title", "featured_product", "products_count")
+    search_fields = ("title",)
     ordering = ("title",)
 
     def get_queryset(self, request):
@@ -105,6 +108,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    autocomplete_fields = ("customer",)
     list_display = ("order_id", "placed_at", "customer_name", "payment_status")
     ordering = ("customer",)
     list_filter = ("customer", "payment_status")
