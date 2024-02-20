@@ -23,3 +23,7 @@ urlpatterns = [
     path("playground/", include("playground.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
+
+admin.site.site_header = "StoreFront E-Com"
+# admin.site.title_header = "StoreFront"
+admin.site.index_title = "StoreFront"
