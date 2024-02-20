@@ -1,8 +1,55 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 from .models import Collection, Customer, Product, Order
+
+
+class InventoryFilter(admin.SimpleListFilter):
+    title = "inventory"
+    parameter_name = "inventory"
+
+    def lookups(self, request, model_admin):
+        return [("<10", "Low")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "<10":
+            return queryset.filter(inventory__lt=10)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    actions = ("clear_inventory",)
+    list_display = (
+        "title",
+        "description",
+        "unit_price",
+        "inventory",
+        "inventory_status",
+        "collection_title",
+    )
+    list_editable = ("unit_price", "inventory")
+    list_display_links = ("title", "description")
+    list_select_related = ("collection",)
+    list_filter = ("collection", InventoryFilter)
+    list_per_page = 20
+
+    @admin.display(ordering="collection")
+    def collection_title(self, product):
+        return product.collection.title
+
+    @admin.display(ordering="inventory")
+    def inventory_status(self, product):
+        return "Low" if product.inventory < 50 else "Ok"
+
+    @admin.action(description="Clear Inventory")
+    def clear_inventory(self, request, queryset):
+        updated_count = queryset.update(inventory=0)
+        self.message_user(
+            request,
+            f"{updated_count} product(s) successfully updated.",
+            messages.ERROR,
+        )
 
 
 @admin.register(Collection)
@@ -22,32 +69,9 @@ class CollectionAdmin(admin.ModelAdmin):
             + urlencode({"collection__id": collection.id})
         )
 
-        return format_html("<a href='{}'>{}</a>", url, collection.products_count)
-
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "description",
-        "unit_price",
-        "inventory",
-        "inventory_status",
-        "collection_title",
-    )
-    list_editable = ("unit_price", "inventory")
-    list_display_links = ("title", "description")
-    list_select_related = ("collection",)
-    list_filter = ("collection",)
-    list_per_page = 20
-
-    @admin.display(ordering="collection")
-    def collection_title(self, product):
-        return product.collection.title
-
-    @admin.display(ordering="inventory")
-    def inventory_status(self, product):
-        return "Low" if product.inventory < 50 else "Ok"
+        return format_html(
+            "<a href='{}'>{}</a>", url, f"{collection.products_count} product(s)"
+        )
 
 
 @admin.register(Customer)
@@ -57,6 +81,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_editable = ("membership",)
     ordering = ("first_name", "last_name")
     list_filter = ("order",)
+    search_fields = ("first_name__istartswith", "last_name__istartswith")
     list_per_page = 20
 
     def get_queryset(self, request):
@@ -73,7 +98,9 @@ class CustomerAdmin(admin.ModelAdmin):
             + "?"
             + urlencode({"customer__id": customer.id})
         )
-        return format_html("<a href='{}'>{}</a>", url, customer.orders_count)
+        return format_html(
+            "<a href='{}'>{}</a>", url, f"{customer.orders_count} order(s)"
+        )
 
 
 @admin.register(Order)
