@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
 # import secrets
 import environ
 import socket
@@ -44,7 +45,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-LOCAL_APPS = ["playground", "store", "tags", "likes"]
+LOCAL_APPS = ["playground", "store", "custom_store", "tags", "likes"]
 
 THIRD_PARTY_APPS = ["debug_toolbar"]
 
@@ -152,7 +153,6 @@ MEDIA_ROOT = str(BASE_DIR / "mediafiles")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 
 DEBUG_TOOLBAR_CONFIG = {
